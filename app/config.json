@@ -1,0 +1,65 @@
+{
+  "zones": [
+    {
+      "id": "thumb",
+      "label": "📱 Thumbnail",
+      "description": "Web thumbnail & preview",
+      "quality": 60,
+      "color": "#FF6B6B",
+      "resize": {
+        "mode": "fixed",
+        "ratio": null,
+        "long_side_length": 4000
+      }
+    },
+    {
+      "id": "web",
+      "label": "🌐 Web Optimized",
+      "description": "Fast loading web images",
+      "quality": 75,
+      "color": "#4ECDC4",
+      "resize": {
+        "mode": "ratio",
+        "ratio": 0.65,
+        "long_side_length": null
+      }
+    },
+    {
+      "id": "cloud",
+      "label": "☁️ Cloud Storage",
+      "description": "Balanced quality & size",
+      "quality": 85,
+      "color": "#45B7D1",
+      "resize": null
+    },
+    {
+      "id": "print",
+      "label": "🖨️ Print Ready",
+      "description": "High quality for printing",
+      "quality": 92,
+      "color": "#96CEB4",
+      "resize": {
+        "mode": "ratio",
+        "ratio": 0.95,
+        "long_side_length": null
+      }
+    },
+    {
+      "id": "archive",
+      "label": "📦 Archive",
+      "description": "Maximum quality preservation",
+      "quality": 100,
+      "color": "#FFEAA7",
+      "resize": null
+    },
+    {
+      "id": "social",
+      "label": "📸 Social Media",
+      "description": "Optimized for social sharing",
+      "quality": 80,
+      "color": "#DDA15E",
+      "resize": null
+    }
+  ],
+  "max_workers": 6
+}
