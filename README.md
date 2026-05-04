@@ -63,10 +63,13 @@ npm run dev -- --port 5173
 
 ```powershell
 # 대화형 모드
-python cli.py
+python app/cli.py
 
 # 폴더 경로 지정
-python cli.py "C:\Users\YourName\Pictures"
+python app/cli.py "C:\Users\YourName\Pictures"
+
+# 품질값 지정 (기본값 90)
+python app/cli.py "C:\Users\YourName\Pictures" 95
 ```
 
 ---
@@ -77,6 +80,7 @@ python cli.py "C:\Users\YourName\Pictures"
 heicTojpg/
 ├── app/                          # FastAPI 백엔드
 │   ├── main.py                   # 앱 초기화
+│   ├── cli.py                    # 독립형 CLI 도구
 │   ├── routers/                  # API 엔드포인트
 │   │   ├── zones.py              # Zone CRUD 엔드포인트
 │   │   ├── uploads.py            # 파일 업로드 엔드포인트
@@ -98,7 +102,6 @@ heicTojpg/
 │   │   └── types.ts              # TypeScript 타입
 │   ├── package.json              # npm 의존성
 │   └── tsconfig.json             # TypeScript 설정
-├── cli.py                        # 독립형 CLI 도구
 ├── run_app.ps1                   # 풀스택 실행 스크립트
 ├── CLAUDE.md                     # 개발자 가이드
 └── README.md                     # 이 파일
@@ -132,6 +135,7 @@ heicTojpg/
 - 변환 중 실시간 진행률 업데이트
 - 파일별 상태 (진행 중/완료/실패) 표시
 - 브라우저에서 즉시 피드백
+- **Results 섹션**: 기본값으로 접혀있음, 토글 버튼으로 확장/축소 가능
 
 ### 4. UI 개선
 
@@ -184,7 +188,7 @@ heicTojpg/
 
 ### 선택 (CLI 도구)
 
-- 프로젝트의 `ui/` 폴더가 없어도 백엔드와 CLI는 독립적으로 동작
+- 프로젝트의 `ui/` 폴더가 없어도 백엔드와 CLI(`app/cli.py`)는 독립적으로 동작
 
 ---
 
@@ -242,8 +246,11 @@ heicTojpg/
 ### CLI를 통한 배치 변환
 
 ```powershell
-# 폴더의 모든 HEIC 파일 변환
-python cli.py "C:\Pictures"
+# 폴더의 모든 HEIC 파일 변환 (대화형)
+python app/cli.py "C:\Pictures"
+
+# 폴더 경로와 품질값을 함께 지정
+python app/cli.py "C:\Pictures" 95
 
 # 프롬프트에서:
 # 변환할 폴더 경로를 입력하세요: C:\Pictures
