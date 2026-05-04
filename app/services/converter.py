@@ -20,7 +20,7 @@ class ImageFormatConverter:
         filename: str,
         output_dir: Path,
         quality: int,
-        resize_config: ResizeConfig,
+        resize_config: ResizeConfig | None = None,
         keep_origin: bool = True,
     ) -> dict:
         """
@@ -54,7 +54,7 @@ class ImageFormatConverter:
 
         try:
             # bytes를 BytesIO로 변환하여 이미지 오픈
-            self._run_image_save(file_bytes, tgt_file, quality, resize_config)
+            self._convert_and_save_image(file_bytes, tgt_file, quality, resize_config)
 
             if not keep_origin:
                 src_file.unlink()  # 원본 파일 삭제
@@ -72,7 +72,7 @@ class ImageFormatConverter:
 
             return {
                 "status": "failed",
-                "output": jpg_filename,
+                "output": tgt_file.name,
                 "error": str(e),
             }
 
@@ -80,7 +80,7 @@ class ImageFormatConverter:
         self,
         src_file: Path,
         quality: int,
-        resize_config: ResizeConfig,
+        resize_config: ResizeConfig | None = None,
         keep_origin: bool = True,
     ) -> dict:
         """
@@ -119,7 +119,8 @@ class ImageFormatConverter:
             }
 
         try:
-            self._save_image(src_file, jpg_file, quality, resize_config)
+
+            self._save_image(src_file, jpg_file, quality, resize_config=resize_config)
 
             if not keep_origin:
                 src_file.unlink()  # 원본 파일 삭제
@@ -141,7 +142,7 @@ class ImageFormatConverter:
                 "error": str(e),
             }
 
-    def _create_save_kwargs(self, image: ImageFile.ImageFile, quality: int) -> dict:
+    def _create_save_options(self, image: ImageFile.ImageFile, quality: int) -> dict:
         # EXIF 추출
         exif_data = image.info.get("exif")
 
@@ -168,21 +169,31 @@ class ImageFormatConverter:
         src_file: Path,
         tgt_file: Path,
         quality: int,
-        resize_config: ResizeConfig,
+        resize_config: ResizeConfig | None = None,
     ) -> None:
         # 파일 타임스탬프 보존
         stat = src_file.stat()
-        # 저장
-        self._run_image_save(src_file, tgt_file, quality, resize_config)
+
+        self._convert_and_save_image(src_file, tgt_file, quality, resize_config)
 
         os.utime(tgt_file, (stat.st_atime, stat.st_mtime))
 
-    def _run_image_save(
+    # 변환 책임 분리
+    def _convert_to_rgb(self, image: Image.Image) -> Image.Image:
+        if image.mode == "RGB":
+            return image
+        if image.mode == "RGBA":
+            background = Image.new("RGB", image.size, (255, 255, 255))
+            background.paste(image, mask=image.split()[3])
+            return background
+        raise ValueError(f"Unsupported image mode: {image.mode}")
+
+    def _convert_and_save_image(
         self,
         src_file: Path | bytes,
         tgt_file: Path,
         quality: int,
-        resize_config: ResizeConfig,
+        resize_config: ResizeConfig | None = None,
     ) -> None:
         # 이미지 취득
         if isinstance(src_file, Path):
@@ -190,31 +201,30 @@ class ImageFormatConverter:
         else:
             image = Image.open(BytesIO(src_file))
 
-        # RGB 변환 (JPEG는 알파채널 미지원)
-        if image.mode == "RGB":
-            image2 = image.convert("RGB")
-        elif image.mode == "RGBA":
-            background = Image.new("RGB", image.size, (255, 255, 255))
-            background.paste(image, mask=image.split()[3])
-            image2 = background
-        else:
-            raise ValueError("Unsupported image mode")
+        # 메타정보 추출
+        image_save_options = self._create_save_options(image, quality)
+
+        # RGBA 체크후 변환 (JPEG는 알파채널 미지원)
+        image = self._convert_to_rgb(image)
 
         # 리사이징 (설정이 있으면 적용)
-        if resize_config.use_resize:
-            image2 = self._resize_image(image2, resize_config)
+        image = self._resize_image(image, resize_config)
 
         # 저장
-        save_kwargs = self._create_save_kwargs(image, quality)
-        image2.save(tgt_file, **save_kwargs)
+        image.save(tgt_file, **image_save_options)
 
     def _resize_image(
-        self, image: Image.Image, resize_config: ResizeConfig
+        self,
+        image: Image.Image,
+        resize_config: ResizeConfig | None = None,
     ) -> Image.Image:
         """이미지 리사이징
         - ratio: 축소 비율을 가로세로에 동일하게 적용 (0.5 = 50%)
         - long_side_length: 이미지의 긴 쪽(가로/세로 중)을 기준으로 리사이징 (비율 유지)
         """
+        if not (resize_config and resize_config.use_resize):
+            return image
+
         original_width, original_height = image.size
         aspect_ratio = original_width / original_height
 

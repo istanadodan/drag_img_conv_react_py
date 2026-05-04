@@ -10,6 +10,7 @@ from services.websocket_manager import websocket_manager
 from schemas.ws import FileResult, JobUpdate
 from schemas.upload import ResizeConfig
 
+
 class FileData(BaseModel):
     filename: str
     bytes: bytes
@@ -106,7 +107,9 @@ class ConversionQueue:
 
         # 백그라운드 작업 실행
         asyncio.create_task(
-            self._process_from_bytes(job_id, quality, file_data_list, output_dir, resize_config)
+            self._process_from_bytes(
+                job_id, quality, file_data_list, output_dir, resize_config
+            )
         )
 
         return job_id
@@ -244,7 +247,9 @@ class ConversionQueue:
                 )
 
         # gather()로 모든 파일을 동시에 처리
-        results = await asyncio.gather(*[process_file_bytes(fd) for fd in file_data_list])
+        results = await asyncio.gather(
+            *[process_file_bytes(fd) for fd in file_data_list]
+        )
 
         # 결과를 하나씩 처리하며 WebSocket 브로드캐스트
         for file_result in results:

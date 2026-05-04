@@ -4,12 +4,10 @@ import sys
 from pathlib import Path
 from PIL import Image
 import pillow_heif
-from services.converter import ImageFormatConverter
-
-image_format_converter = ImageFormatConverter()
+from services.converter import image_format_converter
 
 
-def convert_heic_to_jpg(heic_file, quality) -> tuple[int, int, int]:
+def _convert_heic_to_jpg(heic_file, quality) -> tuple[int, int, int]:
     """
     HEIC → JPG 변환 (최대한 품질 보존)
     - EXIF 메타데이터 보존 (GPS, 촬영정보, 방향)
