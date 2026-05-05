@@ -1,16 +1,39 @@
 {
   "zones": [
     {
+      "id": "cloud",
+      "label": "☁️ Cloud Storage",
+      "description": "Balanced quality & size",
+      "quality": 85,
+      "color": "#45B7D1",
+      "resize": null,
+      "order": 1
+    },
+    {
       "id": "thumb",
       "label": "📱 Thumbnail",
       "description": "Web thumbnail & preview",
-      "quality": 60,
+      "quality": 92,
       "color": "#FF6B6B",
       "resize": {
         "mode": "fixed",
         "ratio": null,
         "long_side_length": 4000
-      }
+      },
+      "order": 2
+    },
+    {
+      "id": "social",
+      "label": "📸 Social Media",
+      "description": "Optimized for social sharing",
+      "quality": 90,
+      "color": "#DDA15E",
+      "resize": {
+        "mode": "ratio",
+        "ratio": 0.6,
+        "long_side_length": null
+      },
+      "order": 3
     },
     {
       "id": "web",
@@ -19,18 +42,20 @@
       "quality": 75,
       "color": "#4ECDC4",
       "resize": {
-        "mode": "ratio",
-        "ratio": 0.65,
-        "long_side_length": null
-      }
+        "mode": "fixed",
+        "ratio": null,
+        "long_side_length": 2048
+      },
+      "order": 4
     },
     {
-      "id": "cloud",
-      "label": "☁️ Cloud Storage",
-      "description": "Balanced quality & size",
-      "quality": 85,
-      "color": "#45B7D1",
-      "resize": null
+      "id": "archive",
+      "label": "📦 Archive",
+      "description": "Maximum quality preservation",
+      "quality": 95,
+      "color": "#FFEAA7",
+      "resize": null,
+      "order": 5
     },
     {
       "id": "print",
@@ -40,25 +65,10 @@
       "color": "#96CEB4",
       "resize": {
         "mode": "ratio",
-        "ratio": 0.95,
+        "ratio": 0.9,
         "long_side_length": null
-      }
-    },
-    {
-      "id": "archive",
-      "label": "📦 Archive",
-      "description": "Maximum quality preservation",
-      "quality": 100,
-      "color": "#FFEAA7",
-      "resize": null
-    },
-    {
-      "id": "social",
-      "label": "📸 Social Media",
-      "description": "Optimized for social sharing",
-      "quality": 80,
-      "color": "#DDA15E",
-      "resize": null
+      },
+      "order": 6
     }
   ],
   "max_workers": 6

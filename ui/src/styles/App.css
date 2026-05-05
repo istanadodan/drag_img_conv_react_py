@@ -154,9 +154,55 @@ code {
 }
 
 .zones-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.zone-item {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.zone-item.dragging {
+  gap: 5px;
+}
+
+.zone-wrapper {
+  width: 160px;
+  cursor: move;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.zone-wrapper.dragging {
+  opacity: 0.5;
+}
+
+.drop-area {
+  width: 0;
+  height: 100%;
+  min-height: 200px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: move;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.zones-grid.dragging .drop-area {
+  width: 8px;
+}
+
+.drop-area.active {
+  background: #edb8a5;
+}
+
+.drop-area-final {
+  flex-shrink: 0;
 }
 
 .selected-zone-container {

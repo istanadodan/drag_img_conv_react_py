@@ -12,6 +12,7 @@ class ZoneResponse(BaseModel):
     quality: int
     color: Optional[str] = None
     resize: Optional[ResizeOption] = None
+    order: int
 
 
 class ZoneCreate(BaseModel):

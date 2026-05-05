@@ -2,6 +2,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException
 from core.config import settings, Zone
 from schemas.zone import ZoneResponse, ZoneCreate
+from schemas.upload import ZoneOrderReq
 
 router = APIRouter(prefix="/api/zones", tags=["zones"])
 
@@ -17,6 +18,7 @@ async def list_zones() -> List[ZoneResponse]:
             quality=z.quality,
             color=z.color,
             resize=z.resize,
+            order=z.order,
         )
         for z in settings.zones
     ]
@@ -39,6 +41,7 @@ async def create_zone(zone_data: ZoneCreate) -> ZoneResponse:
         quality=zone_data.quality,
         color=zone_data.color,
         resize=zone_data.resize,
+        order=len(settings.zones),
     )
 
     # settings에 추가
@@ -54,6 +57,7 @@ async def create_zone(zone_data: ZoneCreate) -> ZoneResponse:
         quality=new_zone.quality,
         color=new_zone.color,
         resize=new_zone.resize,
+        order=new_zone.order,
     )
 
 
@@ -82,6 +86,7 @@ async def update_zone(zone_id: str, zone_data: ZoneCreate) -> ZoneResponse:
         quality=zone.quality,
         color=zone.color,
         resize=zone.resize,
+        order=zone.order,
     )
 
 
@@ -100,3 +105,42 @@ async def delete_zone(zone_id: str) -> dict:
     settings.save()
 
     return {"message": f"Zone '{zone_id}' deleted successfully"}
+
+
+@router.post("/reorder")
+async def reorder_zones(zone_order_req: ZoneOrderReq) -> List[ZoneResponse]:
+    """zone 순서 변경 및 config.json에 저장"""
+    # 입력된 id들이 모두 존재하는지 체크
+    new_zones = []
+    for zone in settings.zones:
+        if zone.id == zone_order_req.zone_id:
+            zone.order = zone_order_req.order
+        else:
+            zone.order = (
+                zone.order + 1 if zone.order >= zone_order_req.order else zone.order
+            )
+
+        new_zones.append(zone)
+
+    new_zones.sort(key=lambda x: x.order)
+    for idx, zone in enumerate(new_zones, start=1):
+        zone.order = idx
+
+    # zones를 새로운 순서로 정렬
+    settings.zones = new_zones
+
+    # config.json에 저장
+    settings.save()
+
+    return [
+        ZoneResponse(
+            id=z.id,
+            label=z.label,
+            description=z.description,
+            quality=z.quality,
+            color=z.color,
+            resize=z.resize,
+            order=z.order,
+        )
+        for z in settings.zones
+    ]

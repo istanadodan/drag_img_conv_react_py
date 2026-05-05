@@ -1,5 +1,5 @@
 from typing import Optional, Any
-from pydantic import BaseModel, model_validator, field_validator
+from pydantic import BaseModel, model_validator, field_validator, Field
 from fastapi import Form
 from core.enums import ResizeMode
 
@@ -34,3 +34,16 @@ class ResizeConfig(BaseModel):
                 raise ValueError(f"mode not validate. {self.mode}")
 
         return self
+
+
+class ZoneOrderReq(BaseModel):
+    zone_id: str = Field(
+        ..., alias="zoneId", description="The ID of the zone to reorder"
+    )
+    order: int = Field(..., description="The new order position for the zone")
+
+    @field_validator("order")
+    def validate_zone_exists(cls, v):
+        if isinstance(v, int):
+            return v + 1
+        return v

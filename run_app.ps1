@@ -25,7 +25,7 @@ if (-not (Test-Path "app\main.py") -or -not (Test-Path "ui\package.json")) {
 
 # Activate Python virtual environment
 Write-Status "Activating Python virtual environment..."
-. ".\venv\Scripts\Activate.ps1"
+. ".\app\.venv\Scripts\Activate.ps1"
 
 $projectRoot = (Get-Location).Path
 $jobs = @()

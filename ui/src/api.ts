@@ -105,6 +105,22 @@ export const connectJobWS = (
   return ws;
 };
 
+export const updateZoneOrder = (
+  zoneId: string, order: number
+): Promise<Zone[]> => {
+  return fetch("/api/zones/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      zoneId: zoneId,
+      order: order,
+  })
+  }).then((r) => {
+    if (!r.ok) throw new Error("Failed to update zone order");
+    return r.json();
+  });
+};
+
 export const downloadFile = async (
   jobId: string,
   filename: string,

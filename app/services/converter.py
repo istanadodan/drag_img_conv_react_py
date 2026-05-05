@@ -135,7 +135,7 @@ class ImageFormatConverter:
             # 실패한 파일은 불완전 상태로 남지 않도록 제거
             if jpg_file.exists():
                 jpg_file.unlink()
-
+            print(f"failed path: {str(jpg_file.resolve())}")
             return {
                 "status": "failed",
                 "output": jpg_file.name,
