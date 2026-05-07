@@ -4,6 +4,7 @@ import { getZones, deleteZone, updateZoneOrder } from './api';
 import DropZone from './components/DropZone';
 import AddZoneModal from './components/AddZoneModal';
 import JobList from './components/JobList';
+import Sidebar from './components/Sidebar';
 import './styles/App.css';
 
 const App: React.FC = () => {
@@ -15,6 +16,10 @@ const App: React.FC = () => {
   const [editingZone, setEditingZone] = useState<Zone | null>(null);
   const [draggedZoneId, setDraggedZoneId] = useState<string | null>(null);
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
+  const [defaultBasePath, setDefaultBasePath] = useState<string>(() => {
+    const saved = localStorage.getItem('defaultBasePath');
+    return saved || '/mPictures/Album';
+  });
 
   useEffect(() => {
     loadZones();
@@ -122,8 +127,18 @@ const App: React.FC = () => {
     }
   };
 
+  const handleBasePathChange = (newPath: string) => {
+    setDefaultBasePath(newPath);
+    localStorage.setItem('defaultBasePath', newPath);
+  };
+
   return (
     <div className="app">
+      <Sidebar
+        defaultBasePath={defaultBasePath}
+        onBasePathChange={handleBasePathChange}
+      />
+
       <header className="app-header">
         <div className="header-content">
           <h1 className="app-title">HEIC to JPG Converter</h1>

@@ -1,20 +1,24 @@
 {
   "zones": [
     {
-      "id": "cloud",
-      "label": "☁️ Cloud Storage",
-      "description": "Balanced quality & size",
-      "quality": 85,
-      "color": "#45B7D1",
-      "resize": null,
-      "order": 1
-    },
-    {
       "id": "thumb",
       "label": "📱 Thumbnail",
       "description": "Web thumbnail & preview",
-      "quality": 92,
+      "quality": 75,
       "color": "#FF6B6B",
+      "resize": {
+        "mode": "fixed",
+        "ratio": null,
+        "long_side_length": 1920
+      },
+      "order": 1
+    },
+    {
+      "id": "web",
+      "label": "🌐 Web Optimized",
+      "description": "Fast loading web images",
+      "quality": 65,
+      "color": "#4ECDC4",
       "resize": {
         "mode": "fixed",
         "ratio": null,
@@ -26,26 +30,22 @@
       "id": "social",
       "label": "📸 Social Media",
       "description": "Optimized for social sharing",
-      "quality": 90,
+      "quality": 74,
       "color": "#DDA15E",
       "resize": {
         "mode": "ratio",
-        "ratio": 0.6,
+        "ratio": 0.8,
         "long_side_length": null
       },
       "order": 3
     },
     {
-      "id": "web",
-      "label": "🌐 Web Optimized",
-      "description": "Fast loading web images",
-      "quality": 75,
-      "color": "#4ECDC4",
-      "resize": {
-        "mode": "fixed",
-        "ratio": null,
-        "long_side_length": 2048
-      },
+      "id": "print",
+      "label": "🖨️ Print Ready",
+      "description": "High quality for printing",
+      "quality": 90,
+      "color": "#96CEB4",
+      "resize": null,
       "order": 4
     },
     {
@@ -56,19 +56,6 @@
       "color": "#FFEAA7",
       "resize": null,
       "order": 5
-    },
-    {
-      "id": "print",
-      "label": "🖨️ Print Ready",
-      "description": "High quality for printing",
-      "quality": 92,
-      "color": "#96CEB4",
-      "resize": {
-        "mode": "ratio",
-        "ratio": 0.9,
-        "long_side_length": null
-      },
-      "order": 6
     }
   ],
   "max_workers": 6

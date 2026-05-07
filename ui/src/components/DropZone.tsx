@@ -36,6 +36,29 @@ const DropZone: React.FC<DropZoneProps> = ({ zone, onJobCreated, onZoneClick, on
     }
   };
 
+  const selectFolderAndUpload = async (files: File[]) => {
+    try {
+      // Use File System Access API to get folder selection dialog
+      if ((window as any).showDirectoryPicker) {
+        try {
+          const dirHandle = await (window as any).showDirectoryPicker();
+          const folderName = dirHandle.name;
+          await handleFiles(files, folderName);
+        } catch (err: any) {
+          // User cancelled the dialog (AbortError)
+          if (err.name === 'AbortError') {
+            console.log('Folder selection cancelled');
+            await handleFiles(files);
+          }
+        }
+      } else {
+        await handleFiles(files);
+      }
+    } catch (error) {
+      console.error('Folder selection error:', error);
+    }
+  };
+
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     if (e.dataTransfer.types.includes('Files')) {
       e.preventDefault();
@@ -45,7 +68,7 @@ const DropZone: React.FC<DropZoneProps> = ({ zone, onJobCreated, onZoneClick, on
       const files = Array.from(e.dataTransfer.files);
       if (files.length === 0) return;
 
-      await handleFiles(files);
+      await selectFolderAndUpload(files);
     }
   };
 
@@ -60,10 +83,10 @@ const DropZone: React.FC<DropZoneProps> = ({ zone, onJobCreated, onZoneClick, on
     fileInputRef.current?.click();
   };
 
-  const handleFiles = async (files: File[]) => {
+  const handleFiles = async (files: File[], folderName?: string) => {
     setIsLoading(true);
     try {
-      const response = await uploadFiles(zone.id, files, zone.resize);
+      const response = await uploadFiles(zone.id, files, zone.resize, folderName);
       const job: Job = {
         job_id: response.job_id,
         zone_id: zone.id,

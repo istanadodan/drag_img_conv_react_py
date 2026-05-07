@@ -207,16 +207,7 @@ class ConversionQueue:
         job_state = self.jobs[job_id]
         job_state.state = "running"
 
-        await websocket_manager.broadcast(
-            job_id,
-            JobUpdate(
-                job_id=job_id,
-                done=0,
-                total=job_state.total,
-                state="running",
-                latest=None,
-            ),
-        )
+        await self.job_update_broadcast(job_id, job_state)
 
         loop = asyncio.get_event_loop()
 
@@ -255,34 +246,36 @@ class ConversionQueue:
         for file_result in results:
             job_state.results.append(file_result)
             job_state.done += 1
-
-            await websocket_manager.broadcast(
-                job_id,
-                JobUpdate(
-                    job_id=job_id,
-                    done=job_state.done,
-                    total=job_state.total,
-                    state="running",
-                    latest=file_result,
-                ),
-            )
+            await self.job_update_broadcast(job_id, job_state, latest=file_result)
 
         job_state.state = "done"
+        await self.job_update_broadcast(job_id, job_state, results=job_state.results)
+
+    def get_state(self, job_id: str) -> ConversionJobState | None:
+        """작업 상태 조회"""
+        return self.jobs.get(job_id)
+
+    # ws broadcasting
+    async def job_update_broadcast(
+        self,
+        job_id: str,
+        job_state: ConversionJobState,
+        *,
+        latest: FileResult | None = None,
+        results: list[FileResult] | None = None,
+    ):
+        """WebSocket을 통해 작업 상태 업데이트 브로드캐스트"""
         await websocket_manager.broadcast(
             job_id,
             JobUpdate(
                 job_id=job_id,
                 done=job_state.done,
                 total=job_state.total,
-                state="done",
-                latest=None,
-                results=job_state.results,
+                state=job_state.state,
+                latest=latest,
+                results=results,
             ),
         )
-
-    def get_state(self, job_id: str) -> ConversionJobState | None:
-        """작업 상태 조회"""
-        return self.jobs.get(job_id)
 
 
 conversion_queue = ConversionQueue(max_workers=4)

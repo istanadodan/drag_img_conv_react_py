@@ -56,6 +56,7 @@ export const uploadFiles = (
   zoneId: string,
   files: File[],
   resize?: ResizeOption,
+  outputPath?: string,
 ): Promise<{ job_id: string; total: number }> => {
   const form = new FormData();
   files.forEach((f) => form.append("files", f));
@@ -72,6 +73,10 @@ export const uploadFiles = (
       form.append("long_side_length", resize.long_side_length.toString());
   } else {
     form.append("use_resize", "false");
+  }
+
+  if (outputPath) {
+    form.append("output_path", outputPath);
   }
 
   // FormData 내용 확인용 (디버깅)
